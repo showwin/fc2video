@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ```ruby
 # scrape newest 100 general(not adult) videos
-videos = Fc2video.scrape(size: 100, type: :general, order: :new)
+videos = Fc2video::Scraper.start(:general, 100, 0)
 videos.each do |video|
   video.title
   #=> return: 'a excellent movie'
@@ -50,32 +50,37 @@ videos.each do |video|
   # return true if it is adult video.
   #=> return: true or false
 
-  video.premium?
+  video.status
+  # return: :all or :premium or :sale
+
+  video.for_all?
+  # all user can watch for free.
+  #=> return: true or false
+
+  video.for_premium?
   # only VIP user can watch premium videos.
   #=> return: true or false
 
-  video.available?
-  # videos on FC2Video are deleted frequently.
-  # you can check whether the video still exists.
+  video.for_sale?
+  # pay to watch video
   #=> return: true or false
 end
-
-
-# check existence of the video which was scraped previously
-# and get current number of bookmarks
-video = Fc2video.new('http://video.fc2.com/en/content/previously_got_url')
-current_bookmarks = video.bookmarks if video.available?
 ```
 
 ### Scraping Options
-* size (integer)
 * type (`:general` or `:adult`)
-* order (`:new` or `:old`)
+* size (Fixnum)
+* offset (Fixnum)
+
+The number of `size` and `offset` is better for multiples of 50. That's why there are 50 videos information in every page we scrape.
 
 ```ruby
-# scrape oldest 1000 adult videos
-Fc2video.scrape(size: 1000, type: :adult, order: :old)
+#Fc2video::Scraper.start(:type, :size, :offset)
+Fc2video::Scraper.start(:adult, 1000, 500)
 ```
+
+### Scraping Speed
+It takes 20~30sec for scraping 1000 videos.
 
 ## Contributing
 Bug reports and pull requests are welcome.
